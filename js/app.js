@@ -75,11 +75,9 @@
     var list = UIKit.qs('#motscles');
     if (!list) return;
 
-    list.innerHTML = '';
-    for (var i = 0; i < TAGS.length; i++) {
-      // On ajoute chaque entrée au fur et à mesure pour garder l'ordre.
-      list.innerHTML += '<option value="' + TAGS[i] + '"></option>';
-    }
+    list.innerHTML = TAGS.map(function (tag) {
+      return '<option value="' + tag + '"></option>';
+    }).join('');
   }
 
   /* Construit le calendrier d'activité : 53 semaines de 7 jours, la teinte de
@@ -157,21 +155,22 @@
   /* Aligne la hauteur des cartes et anime leur arrivée dans le viewport. */
   function revealCards() {
     var cards = UIKit.qsa('.card');
+    var jours = UIKit.qsa('.cal-day');
+    var vh = window.innerHeight;
+
+    var tallest = 0;
+    var tops = cards.map(function (card) {
+      if (card.offsetHeight > tallest) tallest = card.offsetHeight;
+      return card.getBoundingClientRect().top;
+    });
+    var dist = jours.map(function (jour) {
+      return Math.abs(jour.getBoundingClientRect().top - vh / 2);
+    });
 
     for (var i = 0; i < cards.length; i++) {
-      var rect = cards[i].getBoundingClientRect();
-
-      // Hauteur de la plus grande carte, pour garder une grille régulière.
-      var tallest = 0;
-      var all = UIKit.qsa('.card');
-      for (var j = 0; j < all.length; j++) {
-        if (all[j].offsetHeight > tallest) {
-          tallest = all[j].offsetHeight;
-        }
-      }
       cards[i].style.minHeight = tallest + 'px';
 
-      if (rect.top < window.innerHeight - 40) {
+      if (tops[i] < vh - 40) {
         UIKit.cls(cards[i], 'visible', true);
         cards[i].style.transform = 'translateY(0px)';
       } else {
@@ -180,12 +179,19 @@
     }
 
     // Les cases du calendrier apparaissent progressivement à l'approche.
-    var jours = UIKit.qsa('.cal-day');
     for (var k = 0; k < jours.length; k++) {
-      var box = jours[k].getBoundingClientRect();
-      var d = Math.abs(box.top - window.innerHeight / 2);
-      jours[k].style.opacity = Math.max(0.15, 1 - d / window.innerHeight);
+      jours[k].style.opacity = Math.max(0.15, 1 - dist[k] / vh);
     }
+  }
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function () {
+      revealCards();
+      ticking = false;
+    });
   }
 
   /* Affiche les images une fois chargées. */
@@ -210,7 +216,7 @@
     if (champ) champ.addEventListener('input', filterGallery);
   });
 
-  window.addEventListener('scroll', revealCards);
-  window.addEventListener('resize', revealCards);
-  window.addEventListener('load', revealCards);
+  window.addEventListener('scroll', onScroll);
+  window.addEventListener('resize', onScroll);
+  window.addEventListener('load', onScroll);
 })();

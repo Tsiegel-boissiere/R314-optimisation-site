@@ -35,7 +35,7 @@
 <p><strong>Comment vérifier :</strong> dans l'onglet Réseau, survolez une image. L'infobulle affiche <code>Dimensions intrinsèques</code> et <code>Taille rendue</code>. Un rapport de 5 ou 10 entre les deux est une erreur.</p>
 <p><strong>Correction :</strong> redimensionnez la source. Un outil hors ligne (GIMP, Squoosh.app, ImageMagick) suffit.</p>
 <pre><code class="lang-bash"># exemple avec ImageMagick
-magick img1.jpg -resize 800x -quality 78 img1-800.jpg</code></pre>
+magick img1.webp -resize 800x -quality 78 img1-800.webp</code></pre>
 <h3>A3. Format</h3>
 <p>Le JPEG a plus de vingt-cinq ans. À qualité visuelle égale :</p>
 <div class="docs-table"><table>
@@ -60,7 +60,7 @@ magick img1.jpg -resize 800x -quality 78 img1-800.jpg</code></pre>
 <p><strong>Correction :</strong> si l'effet visuel est négligeable, supprimez la règle — mais vérifiez d'abord qu'il est bien négligeable (la contrainte d'iso-rendu s'applique). Si l'effet est voulu, une image de quelques dizaines de kilo-octets suffit largement pour une texture : une texture n'a pas besoin d'être nette.</p>
 <h3>A6. <code>width</code> / <code>height</code> et le CLS</h3>
 <p>Sans dimensions déclarées, le navigateur réserve une hauteur de zéro, puis pousse tout le contenu vers le bas quand l'image arrive. C'est du CLS, et c'est la chose la plus désagréable qui puisse arriver à un lecteur.</p>
-<pre><code class="lang-html">&lt;img src="img/img1.jpg" alt="Image 1" width="760" height="507"&gt;</code></pre>
+<pre><code class="lang-html">&lt;img src="img/img1-800.webp" alt="Image 1" width="800" height="452"&gt;</code></pre>
 <p>Les attributs donnent le <strong>ratio</strong>, pas la taille d'affichage : votre CSS (<code>width:100%; height:auto</code>) continue de commander. Il n'y a aucune raison de s'en priver.</p>
 <h3>A7. Chargement différé</h3>
 <pre><code class="lang-html">&lt;!-- images sous la ligne de flottaison --&gt;
